@@ -99,7 +99,16 @@ public final class QueryUtils {
                 String location = properties.getString("place");
                 long time = properties.getLong("time");
 
-                earthquakes.add(new Earthquake(magnitude, location, time));
+                // Extract the value for the key called "url"
+                String url = properties.getString("url");
+
+                // Create a new {@link Earthquake} object with the magnitude, location, time,
+                // and url from the JSON response.
+                Earthquake earthquake = new Earthquake(magnitude, location, time, url);
+
+                earthquakes.add(earthquake);
+
+              //  earthquakes.add(new Earthquake(magnitude, location, time));
             }
 
 
