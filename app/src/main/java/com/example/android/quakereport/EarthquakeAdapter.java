@@ -33,6 +33,11 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         super(context, 0, earthquakes);
     }
 
+
+    public EarthquakeAdapter(@NonNull Context context, @NonNull List<Earthquake> earthquakes){
+        super(context, 0, earthquakes);
+    }
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
