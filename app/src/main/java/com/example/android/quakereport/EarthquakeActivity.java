@@ -17,15 +17,21 @@ package com.example.android.quakereport;
 
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.Loader;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,19 +46,29 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
             "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&orderby=time&minmag=6&limit=10";
 
     private EarthquakeAdapter mAdapter;
+    private TextView emptyView;
+    private ProgressBar mLoadingSppiner;
+    private ConnectivityManager mConnectivityManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
 
-       // ArrayList<Earthquake> earthquakes = QueryUtils.extractEarthquakes(USGS_REQUEST_URL);
-
-
-       // new EarthquakeTask().execute(USGS_REQUEST_URL);
+        emptyView = (TextView) findViewById(R.id.empty_view);
 
         // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
+        mLoadingSppiner = (ProgressBar) findViewById(R.id.loading_spinner);
+        mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = mConnectivityManager.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        if(!isConnected) {
+            mLoadingSppiner.setVisibility(View.VISIBLE);
+            emptyView.setText(R.string.no_internet_connection);
+            earthquakeListView.setEmptyView(emptyView);
+        }
 
         // Create a new {@link ArrayAdapter} of earthquakes
 //        final EarthquakeAdapter adapter = new EarthquakeAdapter(EarthquakeActivity.this, R.layout.earthquake_list_item, earthquakes);
@@ -62,9 +78,6 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
         earthquakeListView.setAdapter(mAdapter);
-
-
-
 
         earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -91,14 +104,14 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int i, Bundle bundle) {
         // TODO: Create a new loader for the given URL
-
+        Log.i(LOG_TAG, "onCreateLoader");
         return new EarthquakeLoader(this, USGS_REQUEST_URL);
     }
 
     @Override
-    public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakes) {
+        public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakes) {
         // TODO: Update the UI with the result
-
+        Log.i(LOG_TAG, "onLoadFinished");
         // Clear the adapter of previous earthquake data
         mAdapter.clear();
 
@@ -106,7 +119,11 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
         // data set. This will trigger the ListView to update.
         if (earthquakes != null && !earthquakes.isEmpty()) {
             mAdapter.addAll(earthquakes);
+            Log.d("SIZE", earthquakes.size() + "");
         }
+
+        mLoadingSppiner.setVisibility(View.GONE);
+        emptyView.setText(R.string.no_earthquakes);
 
     }
 
@@ -114,6 +131,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     public void onLoaderReset(Loader<List<Earthquake>> loader) {
         // TODO: Loader reset, so we can clear out our existing data.
 
+        Log.i(LOG_TAG, "onLoaderReset");
         mAdapter.clear();
     }
 }
