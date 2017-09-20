@@ -72,7 +72,7 @@ public final class QueryUtils {
 
      */
 
-    public static ArrayList<Earthquake> extractEarthquakes(String... urls) {
+    public static ArrayList<Earthquake> extractEarthquakes(String urls) {
 
 
 
@@ -89,14 +89,11 @@ public final class QueryUtils {
         // Catch the exception so the app doesn't crash, and print the error message to the logs.
 
         try {
-
-
-
             // TODO: Parse the response given by the SAMPLE_JSON_RESPONSE string and
 
             // build up a list of Earthquake objects with the corresponding data.
 
-            String response = makeHttpRequest(createUrl(urls[0]));
+            String response = makeHttpRequest(createUrl(urls));
 
 
             JSONObject  baseJsonResponse = new JSONObject(response);
