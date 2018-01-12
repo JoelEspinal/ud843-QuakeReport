@@ -1,6 +1,7 @@
 package com.example.android.quakereport;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,7 +96,6 @@ public final class QueryUtils {
 
             String response = makeHttpRequest(createUrl(urls));
 
-
             JSONObject  baseJsonResponse = new JSONObject(response);
             JSONArray earthqueakeArray = baseJsonResponse.getJSONArray("features");
 
@@ -156,6 +156,7 @@ public final class QueryUtils {
     }
 
     private static String makeHttpRequest(URL url) throws IOException {
+        Log.d("URL", url.toString());
         String jsonResponse = "";
 
         // If the URL is null, then return early.
@@ -166,15 +167,20 @@ public final class QueryUtils {
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
         try {
+
+
+
             urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.setInstanceFollowRedirects(true);
             urlConnection.setReadTimeout(10000 /* milliseconds */);
             urlConnection.setConnectTimeout(15000 /* milliseconds */);
-            urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
             // If the request was successful (response code 200),
             // then read the input stream and parse the response.
-            if (urlConnection.getResponseCode() == 200) {
+            int responseCode = urlConnection.getResponseCode();
+            if (responseCode == 200 || responseCode == 301) {
                 inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
             } else {

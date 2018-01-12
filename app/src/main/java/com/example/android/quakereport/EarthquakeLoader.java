@@ -4,6 +4,7 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 /**
  * Created by User on 9/11/2017.
@@ -31,11 +32,12 @@ public class EarthquakeLoader extends AsyncTaskLoader<List<Earthquake>> {
     public List<Earthquake> loadInBackground() {
         Log.i(LOG_TAG, "loadInBackground");
 
+        List<Earthquake> earthquakes  = null;
         if (mUrl == null) {
-            return null;
+            return earthquakes;
         }
 
-        List<Earthquake> earthquakes = QueryUtils.extractEarthquakes(mUrl);
+        earthquakes = QueryUtils.extractEarthquakes(mUrl);
         return earthquakes;
     }
 }
