@@ -162,11 +162,12 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
         if (earthquakes != null && !earthquakes.isEmpty()) {
             mAdapter.addAll(earthquakes);
             Log.d("SIZE", earthquakes.size() + "");
+            emptyView.setVisibility(View.GONE);
+        }else{
+            emptyView.setText(R.string.no_earthquakes);
         }
 
         mLoadingSppiner.setVisibility(View.GONE);
-        emptyView.setText(R.string.no_earthquakes);
-
     }
 
     @Override
